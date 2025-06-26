@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI/CD with Maven and Tomcat
 
 on:
   push:
@@ -7,17 +7,31 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: ☕ Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: 🛠️ Build with Maven
+        run: mvn clean install --no-transfer-progress
+
+      - name: 📦 Upload WAR path (for logging)
+        run: ls -lh target/*.war
+
+      - name: 🚀 Deploy to Tomcat
+        run: |
+          curl -T target/insurance-app.war \
+            "$TOMCAT_URL/manager/text/deploy?path=/insurance-app&update=true" \
+            --user "$TOMCAT_USER:$TOMCAT_PASSWORD"
+        env:
+          TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
+          TOMCAT_USER: ${{ secrets.TOMCAT_USER }}
+          TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
