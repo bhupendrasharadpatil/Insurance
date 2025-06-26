@@ -29,7 +29,7 @@ jobs:
       - name: 🚀 Deploy to Tomcat
         run: |
           curl -T target/insurance-app.war \
-            "$TOMCAT_URL/manager/text/deploy?path=/insurance-app&update=true" \
+            "$TOMCAT_URL/Simplilearn\Insurance_repo?path=/Insurance&update=true" \
             --user "$TOMCAT_USER:$TOMCAT_PASSWORD"
         env:
           TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
